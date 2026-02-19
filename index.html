@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOTESTACK</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div>
+            <h2>📝 NoteStack</h2>
+            <ul>
+                <li class="active">Notes</li>
+                <li>Trash</li>
+            </ul>
+        </div>
+        <button id="darkModeBtn">🌙 Dark Mode</button>
+    </aside>
+
+    <!-- Main Section -->
+    <main class="main">
+
+        <header class="topbar">
+            <input type="text" id="searchInput" placeholder="Search notes...">
+        </header>
+
+        <section class="create-note">
+            <textarea id="noteInput" placeholder="Take a note..."></textarea>
+            <button id="addNoteBtn">Add Note</button>
+        </section>
+
+        <section id="notesGrid" class="notes-grid"></section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
