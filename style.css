@@ -142,3 +142,54 @@ body {
     background: #ea4335;
     color: white;
 }
+
+body.dark {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+
+body.dark .sidebar {
+  background: #111827;
+  color: #e2e8f0;
+}
+
+body.dark .main {
+  background: #0f172a;
+}
+
+
+body.dark input,
+body.dark textarea {
+  background: #111827;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
+
+body.dark .note-card {
+  background: #111827;
+  border: 1px solid #334155;
+}
+
+
+body.dark button {
+  background: #1f2937;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+body.dark button:hover {
+  filter: brightness(1.1);
+}
+
+
+body.dark .sidebar ul li.active {
+  background: #1f2937;
+  border-radius: 8px;
+}
