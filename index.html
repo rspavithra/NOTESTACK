@@ -15,8 +15,8 @@
         <div>
             <h2>📝 NoteStack</h2>
             <ul>
-                <li class="active">Notes</li>
-                <li>Trash</li>
+                <li class="active" id="navNotes">Notes</li>
+                <li id="navTrash">Trash</li>
             </ul>
         </div>
         <button id="darkModeBtn">🌙 Dark Mode</button>
@@ -29,12 +29,19 @@
             <input type="text" id="searchInput" placeholder="Search notes...">
         </header>
 
-        <section class="create-note">
-            <textarea id="noteInput" placeholder="Take a note..."></textarea>
-            <button id="addNoteBtn">Add Note</button>
-        </section>
-
-        <section id="notesGrid" class="notes-grid"></section>
+        <!-- NOTES VIEW -->
+        <div id="notesView">
+            <section class="create-note">
+                <textarea id="noteInput" placeholder="Take a note..."></textarea>
+                <button id="addNoteBtn">Add Note</button>
+            </section>
+            <section id="notesGrid" class="notes-grid"></section>
+        </div>
+        
+        <!-- TRASH VIEW (hidden by default) -->
+        <div id="trashView" style="display:none;">
+            <section id="trashGrid" class="notes-grid"></section>
+        </div>
 
     </main>
 
