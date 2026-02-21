@@ -12,19 +12,19 @@ function saveNotes() {
 function renderNotes(filter = "") {
     notesGrid.innerHTML = "";
     const filteredNotes = notes.filter(note =>
-    note.toLowerCase().includes(filter.toLowerCase())
-);
+        note.toLowerCase().includes(filter.toLowerCase())
+    );
 
-if (filteredNotes.length === 0 && filter.trim() !== "") {
-    notesGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">
-        No notes found matching "${filter}"
-    </p>`;
-    return;
-}
+    if (filteredNotes.length === 0 && filter.trim() !== "") {
+        notesGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">
+            No notes found matching "${filter}"
+        </p>`;
+        return;
+    }
+
     notes
         .filter(note => note.toLowerCase().includes(filter.toLowerCase()))
         .forEach((note, index) => {
-
             const card = document.createElement("div");
             card.className = "note-card";
 
@@ -78,9 +78,33 @@ function editNote(index) {
     }
 }
 
+// ✅ Export notes as a text file
+function exportNotes() {
+    if (notes.length === 0) {
+        alert("No notes to export!");
+        return;
+    }
+
+    const content = notes
+        .map((note, index) => `Note ${index + 1}:\n${note}`)
+        .join("\n\n---\n\n");
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-notes.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
 addNoteBtn.addEventListener("click", addNote);
 searchInput.addEventListener("input", () => {
     renderNotes(searchInput.value);
 });
+
+document.getElementById("exportBtn").addEventListener("click", exportNotes);
 
 renderNotes();
