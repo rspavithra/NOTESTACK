@@ -64,6 +64,8 @@ function addNote() {
 }
 
 function deleteNote(index) {
+    const confirmed = confirm("Are you sure you want to delete this note?");
+    if (!confirmed) return;
     notes.splice(index, 1);
     saveNotes();
     renderNotes(searchInput.value);
