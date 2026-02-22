@@ -70,6 +70,7 @@ function addNote() {
 }
 
 function deleteNote(index) {
+     if (!confirm("Move this note to trash?")) return;
     trash.push(notes[index]);   // move to trash instead of permanent delete
     notes.splice(index, 1);
     saveNotes();
@@ -100,6 +101,7 @@ function restoreNote(index) {
 }
 
 function permanentlyDelete(index) {
+     if (!confirm("Permanently delete this note? This cannot be undone.")) return;
     trash.splice(index, 1);
     saveTrash();
     renderTrash();
