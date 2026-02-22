@@ -33,32 +33,38 @@
             <input type="text" id="searchInput" placeholder="Search notes...">
         </header>
 
+        <section class="create-note">
+            <textarea id="noteInput" placeholder="Take a note..."></textarea>
+            <button id="addNoteBtn">Add Note</button>
+        </section>
+
+        <section id="notesGrid" class="notes-grid"></section>
         <!-- NOTES VIEW -->
         <div id="notesView">
             <section class="create-note">
                 <textarea id="noteInput" placeholder="Take a note..."></textarea>
                 <!-- Color Labels Section -->
-<div class="label-selector">
-    <span class="label-title">Labels:</span>
-    <div class="label-options">
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Important"> 
-            <span class="label-dot important"></span> Important
-        </label>
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Work"> 
-            <span class="label-dot work"></span> Work
-        </label>
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Personal"> 
-            <span class="label-dot personal"></span> Personal
-        </label>
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Ideas"> 
-            <span class="label-dot ideas"></span> Ideas
-        </label>
-    </div>
-</div>
+                <div class="label-selector">
+                    <span class="label-title">Labels:</span>
+                    <div class="label-options">
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Important"> 
+                            <span class="label-dot important"></span> Important
+                        </label>
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Work"> 
+                            <span class="label-dot work"></span> Work
+                        </label>
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Personal"> 
+                            <span class="label-dot personal"></span> Personal
+                        </label>
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Ideas"> 
+                            <span class="label-dot ideas"></span> Ideas
+                        </label>
+                    </div>
+                </div>
                 <button id="addNoteBtn">Add Note</button>
             </section>
             <section id="notesGrid" class="notes-grid"></section>
