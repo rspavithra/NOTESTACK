@@ -239,3 +239,103 @@ body {
     background: #ea4335;
     color: white;
 }
+/* Label Selector Styles */
+.label-selector {
+    margin: 10px 0;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.label-title {
+    font-size: 14px;
+    color: #666;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.label-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.label-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.label-checkbox {
+    cursor: pointer;
+}
+
+.label-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.label-dot.important { background-color: #f28b82; }
+.label-dot.work { background-color: #fbbc04; }
+.label-dot.personal { background-color: #4285f4; }
+.label-dot.ideas { background-color: #81c995; }
+
+.note-card {
+    border-left: 4px solid transparent;
+}
+
+.note-card[data-labels*="Important"] { border-left-color: #f28b82; }
+.note-card[data-labels*="Work"] { border-left-color: #fbbc04; }
+.note-card[data-labels*="Personal"] { border-left-color: #4285f4; }
+.note-card[data-labels*="Ideas"] { border-left-color: #81c995; }
+
+.note-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.note-label {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.note-label.important { background-color: #f28b82; }
+.note-label.work { background-color: #fbbc04; color: #333; }
+.note-label.personal { background-color: #4285f4; }
+.note-label.ideas { background-color: #81c995; color: #333; }
+
+.dark-mode .label-selector {
+    border-top-color: #333;
+    border-bottom-color: #333;
+}
+
+.dark-mode .label-title {
+    color: #9aa0a6;
+}
+
+.dark-mode .label-option {
+    color: #e8eaed;
+}
+/* Category indicators in sidebar */
+.sidebar li i {
+    margin-right: 8px;
+    font-style: normal;
+}
+
+.sidebar li[class*="important"] { border-left: 3px solid transparent; }
+.sidebar li[class*="important"].active { border-left-color: #f28b82; }
+
+.sidebar li[class*="work"].active { border-left-color: #fbbc04; }
+.sidebar li[class*="personal"].active { border-left-color: #4285f4; }
+.sidebar li[class*="ideas"].active { border-left-color: #81c995; }
