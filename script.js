@@ -93,7 +93,7 @@ function filterNotesByCategory(category) {
     document.getElementById(`nav${category}`).classList.add('active');
 }
 function saveNotes() {
-    localStorage.setItem("ultimateNotes", JSON.stringify(notes));
+    localStorage.setItem("notestackNotes", JSON.stringify(notes));
 }
 // Migrate old notes to new format
 notes = notes.map(note => {
