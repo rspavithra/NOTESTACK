@@ -8,7 +8,23 @@ const labelCheckboxes = document.querySelectorAll(".label-checkbox");
 let trash = JSON.parse(localStorage.getItem("ultimateTrash")) || [];
 let notes = JSON.parse(localStorage.getItem("ultimateNotes")) || [];
 let currentFilter = "all"; // Track current category filter
+function showEmptyState(container, message) {
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <h3>No notes yet</h3>
+            <p>${message}</p>
+            <button id="emptyAddBtn">+ Add Note</button>
+        </div>
+    `;
 
+    const btn = document.getElementById("emptyAddBtn");
+    if (btn) {
+        btn.addEventListener("click", () => {
+            noteInput.focus();
+        });
+    }
+}
 function getSelectedLabels() {
     const selected = [];
     labelCheckboxes.forEach(checkbox => {
@@ -32,9 +48,10 @@ function filterNotesByCategory(category) {
         notesGrid.innerHTML = "";
         
         if (filtered.length === 0) {
-            notesGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">
-                No ${category} notes found
-            </p>`;
+           showEmptyState(
+    notesGrid,
+    `No ${category} notes found. Start by adding your first note!`
+);
             return;
         }
         
@@ -134,9 +151,10 @@ function renderNotes(filter = "") {
     }
     
     if (filteredNotes.length === 0 && filter.trim() !== "") {
-        notesGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">
-            No notes found matching "${filter}"
-        </p>`;
+       showEmptyState(
+    notesGrid,
+    `No notes found matching "${filter}". Try a different search or add a new note.`
+);
         return;
     }
     
