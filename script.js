@@ -6,7 +6,7 @@ const trashGrid = document.getElementById("trashGrid");
 const darkModeBtn = document.getElementById("darkModeBtn");
 const labelCheckboxes = document.querySelectorAll(".label-checkbox");
 let trash = JSON.parse(localStorage.getItem("ultimateTrash")) || [];
-let notes = JSON.parse(localStorage.getItem("ultimateNotes")) || [];
+let notes = JSON.parse(localStorage.getItem("notestackNotes")) || [];
 let currentFilter = "all"; // Track current category filter
 function showEmptyState(container, message) {
     container.innerHTML = `
@@ -40,9 +40,12 @@ function filterNotesByCategory(category) {
     if (category === "all") {
         renderNotes(searchInput.value);
     } else {
-        const filtered = notes.filter(note => 
-            note.labels && note.labels.includes(category)
-        );
+        let filtered = notes.filter(note => 
+    note.labels && note.labels.includes(category)
+);
+
+// 🔥 Sort by most recent activity
+filtered = filtered.sort((a, b) => b.updatedAt - a.updatedAt);
         
         // Create a temporary filtered display
         notesGrid.innerHTML = "";
@@ -112,17 +115,32 @@ function filterNotesByCategory(category) {
 function saveNotes() {
     localStorage.setItem("notestackNotes", JSON.stringify(notes));
 }
-// Migrate old notes to new format
+// Migrate old notes to new format (add timestamps)
 notes = notes.map(note => {
+
+    // If note is old string format
     if (typeof note === 'string') {
         return {
             id: Date.now() + Math.random(),
             text: note,
-            labels: []
+            labels: [],
+            createdAt: Date.now(),
+            updatedAt: Date.now()
         };
     }
+
+    // If note object but missing timestamps
+    if (!note.createdAt) {
+        note.createdAt = Date.now();
+    }
+
+    if (!note.updatedAt) {
+        note.updatedAt = note.createdAt;
+    }
+
     return note;
 });
+
 saveNotes();
 
 function saveTrash() {
@@ -138,17 +156,24 @@ function renderNotes(filter = "") {
     
     notesGrid.innerHTML = "";
     
-    let filteredNotes = notes;
-    if (filter.startsWith('#')) {
-        const labelFilter = filter.substring(1).toLowerCase();
-        filteredNotes = notes.filter(note => 
-            note.labels && note.labels.some(label => label.toLowerCase().includes(labelFilter))
-        );
-    } else {
-        filteredNotes = notes.filter(note =>
-            note.text.toLowerCase().includes(filter.toLowerCase())
-        );
-    }
+let filteredNotes = notes;
+
+// Apply search filtering
+if (filter.startsWith('#')) {
+    const labelFilter = filter.substring(1).toLowerCase();
+    filteredNotes = filteredNotes.filter(note =>
+        note.labels && note.labels.some(label =>
+            label.toLowerCase().includes(labelFilter)
+        )
+    );
+} else {
+    filteredNotes = filteredNotes.filter(note =>
+        note.text.toLowerCase().includes(filter.toLowerCase())
+    );
+}
+
+// 🔥 NOW sort AFTER filtering
+filteredNotes = filteredNotes.sort((a, b) => b.updatedAt - a.updatedAt);
     
     if (filteredNotes.length === 0 && filter.trim() !== "") {
        showEmptyState(
@@ -182,6 +207,12 @@ function renderNotes(filter = "") {
         
         const content = document.createElement("p");
         content.textContent = note.text;
+
+        const timestamp = document.createElement("p");
+        timestamp.className = "timestamp";
+
+        const date = new Date(note.updatedAt);
+        timestamp.textContent = "Last modified: " + date.toLocaleString();
         
         const actions = document.createElement("div");
         actions.className = "card-actions";
@@ -196,9 +227,12 @@ function renderNotes(filter = "") {
         deleteBtn.className = "delete-btn";
         deleteBtn.onclick = () => deleteNote(originalIndex);
         
+
         actions.appendChild(editBtn);
         actions.appendChild(deleteBtn);
         
+        
+        card.appendChild(timestamp); 
         card.appendChild(content);
         card.appendChild(actions);
         
@@ -214,7 +248,9 @@ function addNote() {
     notes.push({
         id: Date.now(),
         text: text,
-        labels: selectedLabels
+        labels: selectedLabels,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
     });
     
     noteInput.value = "";
@@ -243,6 +279,7 @@ function editNote(index) {
     const updated = prompt("Edit note:", notes[index].text);
     if (updated !== null && updated.trim() !== "") {
         notes[index].text = updated.trim();
+        notes[index].updatedAt = Date.now();  
         saveNotes();
         renderNotes(searchInput.value);
     }
@@ -252,10 +289,14 @@ addNoteBtn.addEventListener("click", addNote);
 searchInput.addEventListener("input", () => {
     if (currentFilter !== "all") {
         // If in category view, search within that category
-        const filtered = notes.filter(note => 
-            note.labels && note.labels.includes(currentFilter) &&
-            note.text.toLowerCase().includes(searchInput.value.toLowerCase())
-        );
+       let filtered = notes.filter(note => 
+    note.labels && 
+    note.labels.includes(currentFilter) &&
+    note.text.toLowerCase().includes(searchInput.value.toLowerCase())
+);
+
+// 🔥 Sort by most recent activity
+filtered = filtered.sort((a, b) => b.updatedAt - a.updatedAt);
         
         notesGrid.innerHTML = "";
         
