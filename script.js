@@ -240,10 +240,39 @@ function deleteNote(index) {
 }
 
 function editNote(index) {
-    const updated = prompt("Edit note:", notes[index].text);
-    if (updated !== null && updated.trim() !== "") {
-        notes[index].text = updated.trim();
-        saveNotes();
+    const currentNote = notes[index];
+
+    // 1️⃣ Edit text
+    const updatedText = prompt("Edit note text:", currentNote.text);
+    if (updatedText === null) return;
+
+    // 2️⃣ Edit labels (comma separated)
+    const currentLabels = currentNote.labels ? currentNote.labels.join(", ") : "";
+    const updatedLabelsInput = prompt(
+        "Edit labels (comma separated: Important, Work, Personal, Ideas):",
+        currentLabels
+    );
+
+    if (updatedLabelsInput === null) return;
+
+    // Clean + normalize labels
+    const allowedLabels = ["Important", "Work", "Personal", "Ideas"];
+
+    const updatedLabels = updatedLabelsInput
+        .split(",")
+        .map(label => label.trim())
+        .filter(label => allowedLabels.includes(label));
+
+    // 3️⃣ Save updates
+    currentNote.text = updatedText.trim();
+    currentNote.labels = updatedLabels;
+
+    saveNotes();
+
+    
+    if (currentFilter !== "all") {
+        filterNotesByCategory(currentFilter);
+    } else {
         renderNotes(searchInput.value);
     }
 }
