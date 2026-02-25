@@ -101,20 +101,53 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 20px;
 }
-
 .note-card {
     background: #fff;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    transition: 0.2s;
+    transition: 0.2s ease;
+    border-left: 4px solid transparent;
 }
 
+.dark-mode .note-image {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.timestamp {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 6px;
+}
+
+.dark-mode .timestamp {
+    color: #9aa0a6;
+}
+.note-card {
+    transition: 0.2s ease;
+}
+.note-image {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 10px;
+    object-fit: cover;
+    max-height: 220px;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.note-image:hover {
+    transform: scale(1.02);
+}
+
+.note-image:hover {
+    transform: scale(1.02);
+}
 .note-card:hover {
     transform: translateY(-5px);
 }
 
 .note-card p {
+    margin-bottom: 8px;
     white-space: pre-wrap;
 }
 

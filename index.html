@@ -15,12 +15,12 @@
         <div>
             <h2>📝 NoteStack</h2>
             <ul>
-    <li class="active" id="navNotes">📝 All Notes</li>
-    <li id="navImportant">🔴 Important</li>
-    <li id="navWork">🟡 Work</li>
-    <li id="navPersonal">🔵 Personal</li>
-    <li id="navIdeas">🟢 Ideas</li>
-    <li id="navTrash">🗑️ Trash</li>
+                <li class="active" id="navNotes">📝 All Notes</li>
+                <li id="navImportant">🔴 Important</li>
+                <li id="navWork">🟡 Work</li>
+                <li id="navPersonal">🔵 Personal</li>
+                <li id="navIdeas">🟢 Ideas</li>
+                <li id="navTrash">🗑️ Trash</li>
             </ul>
         </div>
         <button id="darkModeBtn">🌙 Dark Mode</button>
@@ -29,42 +29,65 @@
     <!-- Main Section -->
     <main class="main">
 
+        <!-- Search -->
         <header class="topbar">
             <input type="text" id="searchInput" placeholder="Search notes...">
         </header>
+        
 
         <!-- NOTES VIEW -->
         <div id="notesView">
+
+            <!-- Create Note Section -->
             <section class="create-note">
+                
                 <textarea id="noteInput" placeholder="Take a note..."></textarea>
-                <!-- Color Labels Section -->
-<div class="label-selector">
-    <span class="label-title">Labels:</span>
-    <div class="label-options">
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Important"> 
-            <span class="label-dot important"></span> Important
-        </label>
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Work"> 
-            <span class="label-dot work"></span> Work
-        </label>
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Personal"> 
-            <span class="label-dot personal"></span> Personal
-        </label>
-        <label class="label-option">
-            <input type="checkbox" class="label-checkbox" value="Ideas"> 
-            <span class="label-dot ideas"></span> Ideas
-        </label>
-    </div>
-</div>
+
+                <!-- Image Upload -->
+                <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp">
+
+                <!-- Image Preview -->
+                <img id="imagePreview" class="note-preview" />
+
+                <!-- Labels -->
+                <div class="label-selector">
+                    <span class="label-title">Labels:</span>
+                    <div class="label-options">
+
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Important">
+                            <span class="label-dot important"></span> Important
+                        </label>
+
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Work">
+                            <span class="label-dot work"></span> Work
+                        </label>
+
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Personal">
+                            <span class="label-dot personal"></span> Personal
+                        </label>
+
+                        <label class="label-option">
+                            <input type="checkbox" class="label-checkbox" value="Ideas">
+                            <span class="label-dot ideas"></span> Ideas
+                        </label>
+
+                    </div>
+                </div>
+
                 <button id="addNoteBtn">Add Note</button>
+
             </section>
+
+            <!-- Notes Grid -->
             <section id="notesGrid" class="notes-grid"></section>
+
         </div>
-        
-        <!-- TRASH VIEW (hidden by default) -->
+        <button onclick="logout()">Logout</button>
+
+        <!-- TRASH VIEW -->
         <div id="trashView" style="display:none;">
             <section id="trashGrid" class="notes-grid"></section>
         </div>
