@@ -1,10 +1,48 @@
+// ---------------- AUTH ----------------
+
+let users = JSON.parse(localStorage.getItem("notestackUsers")) || [];
+let currentUser = JSON.parse(localStorage.getItem("notestackCurrentUser")) || null;
+
+if (!currentUser) {
+    window.location.href = "login.html";
+}
+
+// ---------------- DOM ----------------
+
 const noteInput = document.getElementById("noteInput");
+const imageInput = document.getElementById("imageInput");
 const addNoteBtn = document.getElementById("addNoteBtn");
 const notesGrid = document.getElementById("notesGrid");
 const searchInput = document.getElementById("searchInput");
 const trashGrid = document.getElementById("trashGrid");
 const darkModeBtn = document.getElementById("darkModeBtn");
 const labelCheckboxes = document.querySelectorAll(".label-checkbox");
+
+
+// ---------------- PER USER STORAGE ----------------
+
+let trash = JSON.parse(localStorage.getItem("ultimateTrash_" + currentUser.username)) || [];
+let notes = JSON.parse(localStorage.getItem("notestackNotes_" + currentUser.username)) || [];
+let currentFilter = "all";
+
+// ---------------- SAVE ----------------
+
+function saveNotes() {
+    localStorage.setItem(
+        "notestackNotes_" + currentUser.username,
+        JSON.stringify(notes)
+    );
+}
+
+function saveTrash() {
+    localStorage.setItem(
+        "ultimateTrash_" + currentUser.username,
+        JSON.stringify(trash)
+    );
+}
+
+// ---------------- LABELS ----------------
+
 let trash = JSON.parse(localStorage.getItem("ultimateTrash")) || [];
 let notes = JSON.parse(localStorage.getItem("ultimateNotes")) || [];
 let currentFilter = "all"; // Track current category filter
@@ -18,6 +56,7 @@ function showEmptyState(container, message) {
         </div>
     `;
 
+
     const btn = document.getElementById("emptyAddBtn");
     if (btn) {
         btn.addEventListener("click", () => {
@@ -27,13 +66,38 @@ function showEmptyState(container, message) {
 }
 function getSelectedLabels() {
     const selected = [];
-    labelCheckboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            selected.push(checkbox.value);
-        }
+    labelCheckboxes.forEach(cb => {
+        if (cb.checked) selected.push(cb.value);
     });
     return selected;
 }
+
+
+// ---------------- RENDER CARD ----------------
+
+function createNoteCard(note) {
+    const index = notes.findIndex(n => n.id === note.id);
+
+    const card = document.createElement("div");
+    card.className = "note-card";
+
+    const timestamp = document.createElement("p");
+    timestamp.className = "timestamp";
+    timestamp.textContent =
+        "Last modified: " + new Date(note.updatedAt).toLocaleString();
+
+    const content = document.createElement("p");
+    content.textContent = note.text;
+
+    card.appendChild(timestamp);
+    card.appendChild(content);
+
+    if (note.image) {
+        const img = document.createElement("img");
+        img.src = note.image;
+        img.className = "note-image";
+        card.appendChild(img);
+
 function filterNotesByCategory(category) {
     currentFilter = category;
     
@@ -120,23 +184,49 @@ notes = notes.map(note => {
             text: note,
             labels: []
         };
-    }
-    return note;
-});
-saveNotes();
 
-function saveTrash() {
-    localStorage.setItem("ultimateTrash", JSON.stringify(trash));
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "card-actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.onclick = () => editNote(index);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.onclick = () => deleteNote(index);
+
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+    card.appendChild(actions);
+
+    return card;
 }
 
+// ---------------- RENDER ----------------
+
 function renderNotes(filter = "") {
-    // If we're in a category view, don't override with search
-    if (currentFilter !== "all") {
-        filterNotesByCategory(currentFilter);
-        return;
-    }
-    
     notesGrid.innerHTML = "";
+
+
+    let filtered = notes.filter(note =>
+        note.text.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    filtered.sort((a, b) => b.updatedAt - a.updatedAt);
+
+    filtered.forEach(note => {
+        notesGrid.appendChild(createNoteCard(note));
+    });
+}
+
+function renderTrash() {
+    trashGrid.innerHTML = "";
+
+    trash.forEach((note, index) => {
+
     
     let filteredNotes = notes;
     if (filter.startsWith('#')) {
@@ -161,313 +251,101 @@ function renderNotes(filter = "") {
     filteredNotes.forEach((note, index) => {
         const originalIndex = notes.findIndex(n => n.text === note.text && n.id === note.id);
         
+
         const card = document.createElement("div");
         card.className = "note-card";
-        
-        if (note.labels && note.labels.length > 0) {
-            card.setAttribute('data-labels', note.labels.join(' '));
-            
-            const labelsDiv = document.createElement("div");
-            labelsDiv.className = "note-labels";
-            
-            note.labels.forEach(label => {
-                const labelSpan = document.createElement("span");
-                labelSpan.className = `note-label ${label.toLowerCase()}`;
-                labelSpan.textContent = label;
-                labelsDiv.appendChild(labelSpan);
-            });
-            
-            card.appendChild(labelsDiv);
-        }
-        
+
         const content = document.createElement("p");
         content.textContent = note.text;
-        
-        const actions = document.createElement("div");
-        actions.className = "card-actions";
-        
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.className = "edit-btn";
-        editBtn.onclick = () => editNote(originalIndex);
-        
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.onclick = () => deleteNote(originalIndex);
-        
-        actions.appendChild(editBtn);
-        actions.appendChild(deleteBtn);
-        
         card.appendChild(content);
-        card.appendChild(actions);
-        
-        notesGrid.appendChild(card);
+
+        const restoreBtn = document.createElement("button");
+        restoreBtn.textContent = "Restore";
+        restoreBtn.onclick = () => restoreNote(index);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete Forever";
+        deleteBtn.onclick = () => permanentlyDelete(index);
+
+        card.appendChild(restoreBtn);
+        card.appendChild(deleteBtn);
+
+        trashGrid.appendChild(card);
     });
 }
+
+// ---------------- ADD ----------------
+
 function addNote() {
     const text = noteInput.value.trim();
     if (!text) return;
-    
-    const selectedLabels = getSelectedLabels();
-    
-    notes.push({
+
+    const newNote = {
         id: Date.now(),
-        text: text,
-        labels: selectedLabels
-    });
-    
-    noteInput.value = "";
-    labelCheckboxes.forEach(cb => cb.checked = false);
-    
+        text,
+        image: null,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+    };
+
+    notes.push(newNote);
     saveNotes();
     renderNotes(searchInput.value);
+
+    noteInput.value = "";
 }
 
-function deleteNote(index) {
-    // Store the entire note object, not just the text
-    trash.push(notes[index]);
-    notes.splice(index, 1);
-    saveNotes();
-    saveTrash();
-    
-    // Re-render based on current view
-    if (currentFilter !== "all") {
-        filterNotesByCategory(currentFilter);
-    } else {
-        renderNotes(searchInput.value);
-    }
-}
+// ---------------- EDIT ----------------
 
 function editNote(index) {
     const updated = prompt("Edit note:", notes[index].text);
-    if (updated !== null && updated.trim() !== "") {
-        notes[index].text = updated.trim();
+    if (updated) {
+        notes[index].text = updated;
+        notes[index].updatedAt = Date.now();
         saveNotes();
         renderNotes(searchInput.value);
     }
 }
 
-addNoteBtn.addEventListener("click", addNote);
-searchInput.addEventListener("input", () => {
-    if (currentFilter !== "all") {
-        // If in category view, search within that category
-        const filtered = notes.filter(note => 
-            note.labels && note.labels.includes(currentFilter) &&
-            note.text.toLowerCase().includes(searchInput.value.toLowerCase())
-        );
-        
-        notesGrid.innerHTML = "";
-        
-        if (filtered.length === 0) {
-            notesGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">
-                No ${currentFilter} notes found matching "${searchInput.value}"
-            </p>`;
-            return;
-        }
-        
-        filtered.forEach((note, index) => {
-            const originalIndex = notes.findIndex(n => n.id === note.id);
-            
-            const card = document.createElement("div");
-            card.className = "note-card";
-            
-            if (note.labels && note.labels.length > 0) {
-                card.setAttribute('data-labels', note.labels.join(' '));
-                
-                const labelsDiv = document.createElement("div");
-                labelsDiv.className = "note-labels";
-                
-                note.labels.forEach(label => {
-                    const labelSpan = document.createElement("span");
-                    labelSpan.className = `note-label ${label.toLowerCase()}`;
-                    labelSpan.textContent = label;
-                    labelsDiv.appendChild(labelSpan);
-                });
-                
-                card.appendChild(labelsDiv);
-            }
-            
-            const content = document.createElement("p");
-            content.textContent = note.text;
-            
-            const actions = document.createElement("div");
-            actions.className = "card-actions";
-            
-            const editBtn = document.createElement("button");
-            editBtn.textContent = "Edit";
-            editBtn.className = "edit-btn";
-            editBtn.onclick = () => editNote(originalIndex);
-            
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "Delete";
-            deleteBtn.className = "delete-btn";
-            deleteBtn.onclick = () => deleteNote(originalIndex);
-            
-            actions.appendChild(editBtn);
-            actions.appendChild(deleteBtn);
-            
-            card.appendChild(content);
-            card.appendChild(actions);
-            
-            notesGrid.appendChild(card);
-        });
-    } else {
-        renderNotes(searchInput.value);
-    }
-});
+// ---------------- DELETE ----------------
+
+function deleteNote(index) {
+    trash.push(notes[index]);
+    notes.splice(index, 1);
+    saveNotes();
+    saveTrash();
+    renderNotes(searchInput.value);
+}
+
 function restoreNote(index) {
     notes.push(trash[index]);
     trash.splice(index, 1);
     saveNotes();
     saveTrash();
-    
-    // If we're in trash view, stay in trash view
-    if (document.getElementById("trashView").style.display === "block") {
-        renderTrash();
-    } else {
-        // Otherwise update notes view based on current filter
-        if (currentFilter !== "all") {
-            filterNotesByCategory(currentFilter);
-        } else {
-            renderNotes(searchInput.value);
-        }
-    }
+    renderNotes();
 }
+
 function permanentlyDelete(index) {
-     if (!confirm("Permanently delete this note? This cannot be undone.")) return;
     trash.splice(index, 1);
     saveTrash();
     renderTrash();
 }
 
-function renderTrash() {
-    if (!trashGrid) return;
-    trashGrid.innerHTML = "";
-    
-    if (trash.length === 0) {
-        trashGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">Trash is empty</p>`;
-        return;
-    }
-    
-    trash.forEach((note, index) => {
-        const card = document.createElement("div");
-        card.className = "note-card";
-        
-        // Handle both old string format and new object format
-        const noteText = typeof note === 'string' ? note : note.text;
-        const noteLabels = typeof note === 'object' && note.labels ? note.labels : [];
-        
-        // Show labels if they exist
-        if (noteLabels.length > 0) {
-            const labelsDiv = document.createElement("div");
-            labelsDiv.className = "note-labels";
-            
-            noteLabels.forEach(label => {
-                const labelSpan = document.createElement("span");
-                labelSpan.className = `note-label ${label.toLowerCase()}`;
-                labelSpan.textContent = label;
-                labelsDiv.appendChild(labelSpan);
-            });
-            
-            card.appendChild(labelsDiv);
-        }
-        
-        const content = document.createElement("p");
-        content.textContent = noteText;
-        
-        const actions = document.createElement("div");
-        actions.className = "card-actions";
-        
-        const restoreBtn = document.createElement("button");
-        restoreBtn.textContent = "Restore";
-        restoreBtn.className = "edit-btn";
-        restoreBtn.onclick = () => restoreNote(index);
-        
-        const permDeleteBtn = document.createElement("button");
-        permDeleteBtn.textContent = "Delete Forever";
-        permDeleteBtn.className = "delete-btn";
-        permDeleteBtn.onclick = () => permanentlyDelete(index);
-        
-        actions.appendChild(restoreBtn);
-        actions.appendChild(permDeleteBtn);
-        card.appendChild(content);
-        card.appendChild(actions);
-        trashGrid.appendChild(card);
-    });
+// ---------------- LOGOUT ----------------
+
+function logout() {
+    localStorage.removeItem("notestackCurrentUser");
+    window.location.href = "login.html";
 }
 
-    
-if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    darkModeBtn.textContent = "☀️ Light Mode";
-   }
+// ---------------- EVENTS ----------------
 
-darkModeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const isDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    darkModeBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-});
+addNoteBtn.addEventListener("click", addNote);
+searchInput.addEventListener("input", () =>
+    renderNotes(searchInput.value)
+);
+
+// ---------------- INIT ----------------
+
 renderNotes();
 renderTrash();
-
-// Sidebar navigation
-document.getElementById("navNotes").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "block";
-    document.getElementById("trashView").style.display = "none";
-    document.getElementById("navNotes").classList.add("active");
-    document.getElementById("navTrash").classList.remove("active");
-});
-
-document.getElementById("navTrash").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "none";
-    document.getElementById("trashView").style.display = "block";
-    document.getElementById("navTrash").classList.add("active");
-    document.getElementById("navNotes").classList.remove("active");
-    renderTrash();
-});
-// Category filter event listeners
-document.getElementById("navImportant").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "block";
-    document.getElementById("trashView").style.display = "none";
-    filterNotesByCategory("Important");
-});
-
-document.getElementById("navWork").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "block";
-    document.getElementById("trashView").style.display = "none";
-    filterNotesByCategory("Work");
-});
-
-document.getElementById("navPersonal").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "block";
-    document.getElementById("trashView").style.display = "none";
-    filterNotesByCategory("Personal");
-});
-
-document.getElementById("navIdeas").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "block";
-    document.getElementById("trashView").style.display = "none";
-    filterNotesByCategory("Ideas");
-});
-
-// Update existing All Notes navigation
-document.getElementById("navNotes").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "block";
-    document.getElementById("trashView").style.display = "none";
-    filterNotesByCategory("all");
-});
-
-// Update Trash navigation
-document.getElementById("navTrash").addEventListener("click", () => {
-    document.getElementById("notesView").style.display = "none";
-    document.getElementById("trashView").style.display = "block";
-    document.getElementById("navTrash").classList.add("active");
-    document.getElementById("navNotes").classList.remove("active");
-    document.getElementById("navImportant").classList.remove("active");
-    document.getElementById("navWork").classList.remove("active");
-    document.getElementById("navPersonal").classList.remove("active");
-    document.getElementById("navIdeas").classList.remove("active");
-    renderTrash();
-});
