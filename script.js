@@ -238,41 +238,59 @@ function deleteNote(index) {
         renderNotes(searchInput.value);
     }
 }
-
 function editNote(index) {
-    const currentNote = notes[index];
+    const note = notes[index];
 
-    // 1️⃣ Edit text
-    const updatedText = prompt("Edit note text:", currentNote.text);
-    if (updatedText === null) return;
+    // 1️⃣ Edit text first
+    const updatedText = prompt("Edit note text:", note.text);
+    if (updatedText === null || updatedText.trim() === "") return;
 
-    // 2️⃣ Edit labels (comma separated)
-    const currentLabels = currentNote.labels ? currentNote.labels.join(", ") : "";
-    const updatedLabelsInput = prompt(
-        "Edit labels (comma separated: Important, Work, Personal, Ideas):",
-        currentLabels
-    );
+    note.text = updatedText.trim();
 
-    if (updatedLabelsInput === null) return;
+    // 2️⃣ Ask if user wants to edit labels
+    const changeLabels = confirm("Do you want to edit labels?");
+    if (changeLabels) {
 
-    // Clean + normalize labels
-    const allowedLabels = ["Important", "Work", "Personal", "Ideas"];
+        // Clear all checkboxes
+        labelCheckboxes.forEach(cb => cb.checked = false);
 
-    const updatedLabels = updatedLabelsInput
-        .split(",")
-        .map(label => label.trim())
-        .filter(label => allowedLabels.includes(label));
+        // Pre-check current labels
+        if (note.labels && note.labels.length > 0) {
+            labelCheckboxes.forEach(cb => {
+                if (note.labels.includes(cb.value)) {
+                    cb.checked = true;
+                }
+            });
+        }
 
-    // 3️⃣ Save updates
-    currentNote.text = updatedText.trim();
-    currentNote.labels = updatedLabels;
+        alert("Update the labels below and click 'Add Note' to confirm label changes.");
 
-    saveNotes();
+        // Temporarily change Add button behavior
+        addNoteBtn.textContent = "Save Label Changes";
 
-    
-    if (currentFilter !== "all") {
-        filterNotesByCategory(currentFilter);
+        const saveLabelChanges = () => {
+            note.labels = getSelectedLabels();
+
+            saveNotes();
+
+            // Reset button
+            addNoteBtn.textContent = "Add Note";
+            addNoteBtn.removeEventListener("click", saveLabelChanges);
+
+            // Clear checkboxes
+            labelCheckboxes.forEach(cb => cb.checked = false);
+
+            // Re-render properly
+            if (currentFilter !== "all") {
+                filterNotesByCategory(currentFilter);
+            } else {
+                renderNotes(searchInput.value);
+            }
+        };
+
+        addNoteBtn.addEventListener("click", saveLabelChanges);
     } else {
+        saveNotes();
         renderNotes(searchInput.value);
     }
 }
