@@ -372,3 +372,57 @@ body {
 .sidebar li[class*="work"].active { border-left-color: #fbbc04; }
 .sidebar li[class*="personal"].active { border-left-color: #4285f4; }
 .sidebar li[class*="ideas"].active { border-left-color: #81c995; }
+/* ================= EMPTY STATE ================= */
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+.empty-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.empty-state h3 {
+    margin: 10px 0;
+    color: #333;
+}
+
+.empty-state p {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.empty-state button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #1a73e8;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.empty-state button:hover {
+    background: #1558b0;
+    transform: translateY(-2px);
+}
+
+/* Dark mode support */
+.dark-mode .empty-state {
+    background: #1e1e1e;
+    border: 1px solid #333;
+}
+
+.dark-mode .empty-state h3 {
+    color: #e8eaed;
+}
+
+.dark-mode .empty-state p {
+    color: #9aa0a6;
+}
