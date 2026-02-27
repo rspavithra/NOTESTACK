@@ -339,3 +339,11 @@ body {
 .sidebar li[class*="work"].active { border-left-color: #fbbc04; }
 .sidebar li[class*="personal"].active { border-left-color: #4285f4; }
 .sidebar li[class*="ideas"].active { border-left-color: #81c995; }
+.note-card {
+    cursor: grab;
+}
+
+.note-card:active {
+    cursor: grabbing;
+    opacity: 0.85;
+}
