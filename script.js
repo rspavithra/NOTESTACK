@@ -130,78 +130,66 @@ function saveTrash() {
 }
 
 function renderNotes(filter = "") {
-    // If we're in a category view, don't override with search
-    if (currentFilter !== "all") {
-        filterNotesByCategory(currentFilter);
-        return;
-    }
-    
     notesGrid.innerHTML = "";
-    
-    let filteredNotes = notes;
-    if (filter.startsWith('#')) {
-        const labelFilter = filter.substring(1).toLowerCase();
-        filteredNotes = notes.filter(note => 
-            note.labels && note.labels.some(label => label.toLowerCase().includes(labelFilter))
-        );
-    } else {
-        filteredNotes = notes.filter(note =>
-            note.text.toLowerCase().includes(filter.toLowerCase())
-        );
-    }
-    
-    if (filteredNotes.length === 0 && filter.trim() !== "") {
-       showEmptyState(
-    notesGrid,
-    `No notes found matching "${filter}". Try a different search or add a new note.`
-);
-        return;
-    }
-    
+
+    let filteredNotes = notes.filter(note =>
+        note.text.toLowerCase().includes(filter.toLowerCase())
+    );
+
     filteredNotes.forEach((note, index) => {
-        const originalIndex = notes.findIndex(n => n.text === note.text && n.id === note.id);
-        
         const card = document.createElement("div");
         card.className = "note-card";
-        
-        if (note.labels && note.labels.length > 0) {
-            card.setAttribute('data-labels', note.labels.join(' '));
-            
-            const labelsDiv = document.createElement("div");
-            labelsDiv.className = "note-labels";
-            
-            note.labels.forEach(label => {
-                const labelSpan = document.createElement("span");
-                labelSpan.className = `note-label ${label.toLowerCase()}`;
-                labelSpan.textContent = label;
-                labelsDiv.appendChild(labelSpan);
-            });
-            
-            card.appendChild(labelsDiv);
+        card.setAttribute("draggable", "true");
+        card.dataset.index = index;
+
+        if (note.favorite) {
+            card.classList.add("favorite");
         }
-        
+
+        /* -------- DRAG EVENTS (unchanged) -------- */
+        card.addEventListener("dragstart", () => draggedIndex = index);
+        card.addEventListener("dragover", (e) => e.preventDefault());
+        card.addEventListener("drop", () => {
+            if (draggedIndex === null || draggedIndex === index) return;
+
+            const moved = notes.splice(draggedIndex, 1)[0];
+            notes.splice(index, 0, moved);
+
+            saveNotes();
+            renderNotes(searchInput.value);
+            draggedIndex = null;
+        });
+        /* ----------------------------------------- */
+
+        /* ⭐ FAVORITE ICON */
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = note.favorite ? "⭐" : "☆";
+
+        star.onclick = () => {
+            note.favorite = !note.favorite;
+            saveNotes();
+            renderNotes(searchInput.value);
+        };
+
         const content = document.createElement("p");
         content.textContent = note.text;
-        
+
         const actions = document.createElement("div");
         actions.className = "card-actions";
-        
+
         const editBtn = document.createElement("button");
         editBtn.textContent = "Edit";
         editBtn.className = "edit-btn";
-        editBtn.onclick = () => editNote(originalIndex);
-        
+        editBtn.onclick = () => editNote(index);
+
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.className = "delete-btn";
-        deleteBtn.onclick = () => deleteNote(originalIndex);
-        
-        actions.appendChild(editBtn);
-        actions.appendChild(deleteBtn);
-        
-        card.appendChild(content);
-        card.appendChild(actions);
-        
+        deleteBtn.onclick = () => deleteNote(index);
+
+        actions.append(editBtn, deleteBtn);
+        card.append(star, content, actions);
         notesGrid.appendChild(card);
     });
 }
@@ -212,10 +200,11 @@ function addNote() {
     const selectedLabels = getSelectedLabels();
     
     notes.push({
-        id: Date.now(),
-        text: text,
-        labels: selectedLabels
-    });
+    id: Date.now(),
+    text,
+    labels: getSelectedLabels(),
+    favorite: false   // ⭐ ADDED
+});
     
     noteInput.value = "";
     labelCheckboxes.forEach(cb => cb.checked = false);
