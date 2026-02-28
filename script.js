@@ -518,3 +518,41 @@ document.getElementById("navTrash").addEventListener("click", () => {
     document.getElementById("navIdeas").classList.remove("active");
     renderTrash();
 });
+
+/* ===========================
+   KEYBOARD SHORTCUTS 
+=========================== */
+
+document.addEventListener("keydown", (e) => {
+
+    if (e.altKey && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        noteInput.focus();
+        return;
+    }
+
+    if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        searchInput.focus();
+        return;
+    }
+
+    if (e.altKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        darkModeBtn.click();
+        return;
+    }
+
+    if (e.altKey && e.key.toLowerCase() === "t") {
+        e.preventDefault();
+        document.getElementById("navTrash").click();
+        return;
+    }
+
+    if (e.key === "Escape") {
+        searchInput.value = "";
+        renderNotes();
+        return;
+    }
+
+});
