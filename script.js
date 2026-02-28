@@ -238,11 +238,58 @@ function deleteNote(index) {
         renderNotes(searchInput.value);
     }
 }
-
 function editNote(index) {
-    const updated = prompt("Edit note:", notes[index].text);
-    if (updated !== null && updated.trim() !== "") {
-        notes[index].text = updated.trim();
+    const note = notes[index];
+
+    // 1️⃣ Edit text first
+    const updatedText = prompt("Edit note text:", note.text);
+    if (updatedText === null || updatedText.trim() === "") return;
+
+    note.text = updatedText.trim();
+
+    // 2️⃣ Ask if user wants to edit labels
+    const changeLabels = confirm("Do you want to edit labels?");
+    if (changeLabels) {
+
+        // Clear all checkboxes
+        labelCheckboxes.forEach(cb => cb.checked = false);
+
+        // Pre-check current labels
+        if (note.labels && note.labels.length > 0) {
+            labelCheckboxes.forEach(cb => {
+                if (note.labels.includes(cb.value)) {
+                    cb.checked = true;
+                }
+            });
+        }
+
+        alert("Update the labels below and click 'Add Note' to confirm label changes.");
+
+        // Temporarily change Add button behavior
+        addNoteBtn.textContent = "Save Label Changes";
+
+        const saveLabelChanges = () => {
+            note.labels = getSelectedLabels();
+
+            saveNotes();
+
+            // Reset button
+            addNoteBtn.textContent = "Add Note";
+            addNoteBtn.removeEventListener("click", saveLabelChanges);
+
+            // Clear checkboxes
+            labelCheckboxes.forEach(cb => cb.checked = false);
+
+            // Re-render properly
+            if (currentFilter !== "all") {
+                filterNotesByCategory(currentFilter);
+            } else {
+                renderNotes(searchInput.value);
+            }
+        };
+
+        addNoteBtn.addEventListener("click", saveLabelChanges);
+    } else {
         saveNotes();
         renderNotes(searchInput.value);
     }
@@ -470,4 +517,42 @@ document.getElementById("navTrash").addEventListener("click", () => {
     document.getElementById("navPersonal").classList.remove("active");
     document.getElementById("navIdeas").classList.remove("active");
     renderTrash();
+});
+
+/* ===========================
+   KEYBOARD SHORTCUTS 
+=========================== */
+
+document.addEventListener("keydown", (e) => {
+
+    if (e.altKey && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        noteInput.focus();
+        return;
+    }
+
+    if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        searchInput.focus();
+        return;
+    }
+
+    if (e.altKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        darkModeBtn.click();
+        return;
+    }
+
+    if (e.altKey && e.key.toLowerCase() === "t") {
+        e.preventDefault();
+        document.getElementById("navTrash").click();
+        return;
+    }
+
+    if (e.key === "Escape") {
+        searchInput.value = "";
+        renderNotes();
+        return;
+    }
+
 });
