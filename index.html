@@ -67,25 +67,24 @@
                             </label>
                         </div>
                     </div>
+                    <!-- Folder Selection -->
+                    <div class="folder-selector">
+                        <select id="folderSelect">
+                            <option value="">No Folder</option>
+                            <!-- Dynamic folders injected here -->
+                        </select>
+                    </div>
+                    <button id="addNoteBtn">Add Note</button>
+                </section>
+                <section id="notesGrid" class="notes-grid"></section>
             </div>
-            <!-- Folder Selection -->
-            <div class="folder-selector">
-                <select id="folderSelect">
-                    <option value="">No Folder</option>
-                    <!-- Dynamic folders injected here -->
-                </select>
+
+            <!-- TRASH VIEW (hidden by default) -->
+            <div id="trashView" style="display:none;">
+                <section id="trashGrid" class="notes-grid"></section>
             </div>
-            <button id="addNoteBtn">Add Note</button>
-            </section>
-            <section id="notesGrid" class="notes-grid"></section>
-    </div>
 
-    <!-- TRASH VIEW (hidden by default) -->
-    <div id="trashView" style="display:none;">
-        <section id="trashGrid" class="notes-grid"></section>
-    </div>
-
-    </main>
+        </main>
 
     </div>
 
