@@ -21,7 +21,43 @@ body {
     border-right: 1px solid #ddd;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+}
+
+.custom-folders-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    flex-grow: 1;
+}
+
+.dark-mode .custom-folders-section {
+    border-top-color: #333;
+}
+
+.sidebar-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px dashed #ccc;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+    transition: 0.2s;
+}
+
+.sidebar-btn:hover {
+    background: #f1f3f4;
+}
+
+.dark-mode .sidebar-btn {
+    border-color: #555;
+    color: #aaa;
+}
+
+.dark-mode .sidebar-btn:hover {
+    background: #333;
 }
 
 .sidebar h2 {
@@ -73,7 +109,7 @@ body {
     background: white;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
 }
 
@@ -84,6 +120,25 @@ body {
     outline: none;
     font-size: 16px;
     min-height: 60px;
+}
+
+.folder-selector {
+    margin-bottom: 10px;
+}
+
+.folder-selector select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    font-size: 13px;
+    color: #444;
+}
+
+.dark-mode .folder-selector select {
+    background: #333;
+    border-color: #555;
+    color: #e8eaed;
 }
 
 #addNoteBtn {
@@ -106,7 +161,7 @@ body {
     background: #fff;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     transition: 0.2s;
 }
 
@@ -142,6 +197,7 @@ body {
     background: #ea4335;
     color: white;
 }
+
 /* REPLACE your existing dark mode styles at the bottom with these */
 
 .dark-mode {
@@ -239,6 +295,7 @@ body {
     background: #ea4335;
     color: white;
 }
+
 /* Label Selector Styles */
 .label-selector {
     margin: 10px 0;
@@ -279,19 +336,41 @@ body {
     display: inline-block;
 }
 
-.label-dot.important { background-color: #f28b82; }
-.label-dot.work { background-color: #fbbc04; }
-.label-dot.personal { background-color: #4285f4; }
-.label-dot.ideas { background-color: #81c995; }
+.label-dot.important {
+    background-color: #f28b82;
+}
+
+.label-dot.work {
+    background-color: #fbbc04;
+}
+
+.label-dot.personal {
+    background-color: #4285f4;
+}
+
+.label-dot.ideas {
+    background-color: #81c995;
+}
 
 .note-card {
     border-left: 4px solid transparent;
 }
 
-.note-card[data-labels*="Important"] { border-left-color: #f28b82; }
-.note-card[data-labels*="Work"] { border-left-color: #fbbc04; }
-.note-card[data-labels*="Personal"] { border-left-color: #4285f4; }
-.note-card[data-labels*="Ideas"] { border-left-color: #81c995; }
+.note-card[data-labels*="Important"] {
+    border-left-color: #f28b82;
+}
+
+.note-card[data-labels*="Work"] {
+    border-left-color: #fbbc04;
+}
+
+.note-card[data-labels*="Personal"] {
+    border-left-color: #4285f4;
+}
+
+.note-card[data-labels*="Ideas"] {
+    border-left-color: #81c995;
+}
 
 .note-labels {
     display: flex;
@@ -310,10 +389,23 @@ body {
     letter-spacing: 0.5px;
 }
 
-.note-label.important { background-color: #f28b82; }
-.note-label.work { background-color: #fbbc04; color: #333; }
-.note-label.personal { background-color: #4285f4; }
-.note-label.ideas { background-color: #81c995; color: #333; }
+.note-label.important {
+    background-color: #f28b82;
+}
+
+.note-label.work {
+    background-color: #fbbc04;
+    color: #333;
+}
+
+.note-label.personal {
+    background-color: #4285f4;
+}
+
+.note-label.ideas {
+    background-color: #81c995;
+    color: #333;
+}
 
 .dark-mode .label-selector {
     border-top-color: #333;
@@ -327,18 +419,33 @@ body {
 .dark-mode .label-option {
     color: #e8eaed;
 }
+
 /* Category indicators in sidebar */
 .sidebar li i {
     margin-right: 8px;
     font-style: normal;
 }
 
-.sidebar li[class*="important"] { border-left: 3px solid transparent; }
-.sidebar li[class*="important"].active { border-left-color: #f28b82; }
+.sidebar li[class*="important"] {
+    border-left: 3px solid transparent;
+}
 
-.sidebar li[class*="work"].active { border-left-color: #fbbc04; }
-.sidebar li[class*="personal"].active { border-left-color: #4285f4; }
-.sidebar li[class*="ideas"].active { border-left-color: #81c995; }
+.sidebar li[class*="important"].active {
+    border-left-color: #f28b82;
+}
+
+.sidebar li[class*="work"].active {
+    border-left-color: #fbbc04;
+}
+
+.sidebar li[class*="personal"].active {
+    border-left-color: #4285f4;
+}
+
+.sidebar li[class*="ideas"].active {
+    border-left-color: #81c995;
+}
+
 /* ================= EMPTY STATE ================= */
 
 .empty-state {
@@ -346,7 +453,7 @@ body {
     padding: 40px 20px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     margin-top: 20px;
 }
 
