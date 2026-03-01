@@ -5,6 +5,12 @@ const searchInput = document.getElementById("searchInput");
 const trashGrid = document.getElementById("trashGrid");
 const darkModeBtn = document.getElementById("darkModeBtn");
 const labelCheckboxes = document.querySelectorAll(".label-checkbox");
+
+// Formatting Toolbar Elements
+const boldBtn = document.getElementById("boldBtn");
+const italicBtn = document.getElementById("italicBtn");
+const ulBtn = document.getElementById("ulBtn");
+
 let trash = JSON.parse(localStorage.getItem("ultimateTrash")) || [];
 let notes = JSON.parse(localStorage.getItem("ultimateNotes")) || [];
 let currentFilter = "all"; // Track current category filter
@@ -77,8 +83,9 @@ function filterNotesByCategory(category) {
                 card.appendChild(labelsDiv);
             }
             
-            const content = document.createElement("p");
-            content.textContent = note.text;
+            const content = document.createElement("div"); // Use div to hold HTML
+            content.className = "note-text";
+            content.innerHTML = note.text; // Render HTML directly
             
             const actions = document.createElement("div");
             actions.className = "card-actions";
@@ -180,8 +187,9 @@ function renderNotes(filter = "") {
             card.appendChild(labelsDiv);
         }
         
-        const content = document.createElement("p");
-        content.textContent = note.text;
+        const content = document.createElement("div"); // Use div to hold HTML
+        content.className = "note-text";
+        content.innerHTML = note.text; // Render HTML directly
         
         const actions = document.createElement("div");
         actions.className = "card-actions";
@@ -206,18 +214,20 @@ function renderNotes(filter = "") {
     });
 }
 function addNote() {
-    const text = noteInput.value.trim();
-    if (!text) return;
+    // Read from the contenteditable div
+    const textHTML = noteInput.innerHTML.trim();
+    const textPlain = noteInput.innerText.trim();
+    if (!textPlain) return; // Prevent empty notes
     
     const selectedLabels = getSelectedLabels();
     
     notes.push({
         id: Date.now(),
-        text: text,
+        text: textHTML, // Save the HTML content
         labels: selectedLabels
     });
     
-    noteInput.value = "";
+    noteInput.innerHTML = ""; // Clear contenteditable
     labelCheckboxes.forEach(cb => cb.checked = false);
     
     saveNotes();
@@ -249,6 +259,24 @@ function editNote(index) {
 }
 
 addNoteBtn.addEventListener("click", addNote);
+
+// --- Formatting Logic ---
+function formatText(command) {
+    document.execCommand(command, false, null);
+    noteInput.focus();
+}
+
+if (boldBtn) boldBtn.addEventListener("click", () => formatText("bold"));
+if (italicBtn) italicBtn.addEventListener("click", () => formatText("italic"));
+if (ulBtn) ulBtn.addEventListener("click", () => formatText("insertUnorderedList"));
+
+// Ensure contenteditable div handles paragraphs cleanly on enter
+noteInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        // Just let it do default div/br insertion for simple rich text
+    }
+});
+
 searchInput.addEventListener("input", () => {
     if (currentFilter !== "all") {
         // If in category view, search within that category
@@ -288,8 +316,9 @@ searchInput.addEventListener("input", () => {
                 card.appendChild(labelsDiv);
             }
             
-            const content = document.createElement("p");
-            content.textContent = note.text;
+            const content = document.createElement("div"); // Use div to hold HTML
+            content.className = "note-text";
+            content.innerHTML = note.text; // Render HTML directly
             
             const actions = document.createElement("div");
             actions.className = "card-actions";
@@ -373,8 +402,9 @@ function renderTrash() {
             card.appendChild(labelsDiv);
         }
         
-        const content = document.createElement("p");
-        content.textContent = noteText;
+        const content = document.createElement("div"); // Use div to hold HTML
+        content.className = "note-text";
+        content.innerHTML = noteText; // Render HTML directly
         
         const actions = document.createElement("div");
         actions.className = "card-actions";

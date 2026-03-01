@@ -36,7 +36,13 @@
         <!-- NOTES VIEW -->
         <div id="notesView">
             <section class="create-note">
-                <textarea id="noteInput" placeholder="Take a note..."></textarea>
+                <!-- Text Formatting Toolbar -->
+                <div class="format-toolbar">
+                    <button id="boldBtn" class="format-btn" title="Bold"><b>B</b></button>
+                    <button id="italicBtn" class="format-btn" title="Italic"><i>I</i></button>
+                    <button id="ulBtn" class="format-btn" title="Bullet List">•</button>
+                </div>
+                <div id="noteInput" contenteditable="true" data-placeholder="Take a note..."></div>
                 <!-- Color Labels Section -->
 <div class="label-selector">
     <span class="label-title">Labels:</span>
