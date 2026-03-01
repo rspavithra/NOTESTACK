@@ -73,17 +73,56 @@ body {
     background: white;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
 }
 
-.create-note textarea {
+.create-note [contenteditable] {
     width: 100%;
     border: none;
-    resize: none;
     outline: none;
     font-size: 16px;
     min-height: 60px;
+    padding: 10px 0;
+}
+
+.create-note [contenteditable]:empty::before {
+    content: attr(data-placeholder);
+    color: #777;
+    pointer-events: none;
+    display: block;
+}
+
+.format-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.format-btn {
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: 0.2s;
+}
+
+.format-btn:hover {
+    background: #f1f3f4;
+}
+
+.format-btn i {
+    font-family: serif;
+    font-style: italic;
+}
+
+.format-btn b {
+    font-weight: bold;
 }
 
 #addNoteBtn {
@@ -106,7 +145,7 @@ body {
     background: #fff;
     padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     transition: 0.2s;
 }
 
@@ -142,6 +181,7 @@ body {
     background: #ea4335;
     color: white;
 }
+
 /* REPLACE your existing dark mode styles at the bottom with these */
 
 .dark-mode {
@@ -199,14 +239,25 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.dark-mode .create-note textarea {
+.dark-mode .create-note [contenteditable] {
     background-color: #1e1e1e;
     color: #e8eaed;
-    border: none;
 }
 
-.dark-mode .create-note textarea::placeholder {
+.dark-mode .create-note [contenteditable]:empty::before {
     color: #9aa0a6;
+}
+
+.dark-mode .format-toolbar {
+    border-bottom-color: #333;
+}
+
+.dark-mode .format-btn {
+    color: #e8eaed;
+}
+
+.dark-mode .format-btn:hover {
+    background: #333;
 }
 
 /* 4. Note cards with hierarchy and separation */
@@ -239,6 +290,7 @@ body {
     background: #ea4335;
     color: white;
 }
+
 /* Label Selector Styles */
 .label-selector {
     margin: 10px 0;
@@ -279,19 +331,41 @@ body {
     display: inline-block;
 }
 
-.label-dot.important { background-color: #f28b82; }
-.label-dot.work { background-color: #fbbc04; }
-.label-dot.personal { background-color: #4285f4; }
-.label-dot.ideas { background-color: #81c995; }
+.label-dot.important {
+    background-color: #f28b82;
+}
+
+.label-dot.work {
+    background-color: #fbbc04;
+}
+
+.label-dot.personal {
+    background-color: #4285f4;
+}
+
+.label-dot.ideas {
+    background-color: #81c995;
+}
 
 .note-card {
     border-left: 4px solid transparent;
 }
 
-.note-card[data-labels*="Important"] { border-left-color: #f28b82; }
-.note-card[data-labels*="Work"] { border-left-color: #fbbc04; }
-.note-card[data-labels*="Personal"] { border-left-color: #4285f4; }
-.note-card[data-labels*="Ideas"] { border-left-color: #81c995; }
+.note-card[data-labels*="Important"] {
+    border-left-color: #f28b82;
+}
+
+.note-card[data-labels*="Work"] {
+    border-left-color: #fbbc04;
+}
+
+.note-card[data-labels*="Personal"] {
+    border-left-color: #4285f4;
+}
+
+.note-card[data-labels*="Ideas"] {
+    border-left-color: #81c995;
+}
 
 .note-labels {
     display: flex;
@@ -310,10 +384,23 @@ body {
     letter-spacing: 0.5px;
 }
 
-.note-label.important { background-color: #f28b82; }
-.note-label.work { background-color: #fbbc04; color: #333; }
-.note-label.personal { background-color: #4285f4; }
-.note-label.ideas { background-color: #81c995; color: #333; }
+.note-label.important {
+    background-color: #f28b82;
+}
+
+.note-label.work {
+    background-color: #fbbc04;
+    color: #333;
+}
+
+.note-label.personal {
+    background-color: #4285f4;
+}
+
+.note-label.ideas {
+    background-color: #81c995;
+    color: #333;
+}
 
 .dark-mode .label-selector {
     border-top-color: #333;
@@ -327,18 +414,33 @@ body {
 .dark-mode .label-option {
     color: #e8eaed;
 }
+
 /* Category indicators in sidebar */
 .sidebar li i {
     margin-right: 8px;
     font-style: normal;
 }
 
-.sidebar li[class*="important"] { border-left: 3px solid transparent; }
-.sidebar li[class*="important"].active { border-left-color: #f28b82; }
+.sidebar li[class*="important"] {
+    border-left: 3px solid transparent;
+}
 
-.sidebar li[class*="work"].active { border-left-color: #fbbc04; }
-.sidebar li[class*="personal"].active { border-left-color: #4285f4; }
-.sidebar li[class*="ideas"].active { border-left-color: #81c995; }
+.sidebar li[class*="important"].active {
+    border-left-color: #f28b82;
+}
+
+.sidebar li[class*="work"].active {
+    border-left-color: #fbbc04;
+}
+
+.sidebar li[class*="personal"].active {
+    border-left-color: #4285f4;
+}
+
+.sidebar li[class*="ideas"].active {
+    border-left-color: #81c995;
+}
+
 /* ================= EMPTY STATE ================= */
 
 .empty-state {
@@ -346,7 +448,7 @@ body {
     padding: 40px 20px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     margin-top: 20px;
 }
 
