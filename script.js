@@ -5,9 +5,20 @@ const searchInput = document.getElementById("searchInput");
 const trashGrid = document.getElementById("trashGrid");
 const darkModeBtn = document.getElementById("darkModeBtn");
 const labelCheckboxes = document.querySelectorAll(".label-checkbox");
+
+// Folder Elements
+const newFolderBtn = document.getElementById("newFolderBtn");
+const newFolderModal = document.getElementById("newFolderModal");
+const closeFolderModal = document.getElementById("closeFolderModal");
+const folderNameInput = document.getElementById("folderNameInput");
+const createFolderBtn = document.getElementById("createFolderBtn");
+const customFoldersList = document.getElementById("customFoldersList");
+const folderSelect = document.getElementById("folderSelect");
+
 let trash = JSON.parse(localStorage.getItem("ultimateTrash")) || [];
 let notes = JSON.parse(localStorage.getItem("ultimateNotes")) || [];
-let currentFilter = "all"; // Track current category filter
+let folders = JSON.parse(localStorage.getItem("noteFolders")) || [];
+let currentFilter = "all"; // Track current category/folder filter
 function showEmptyState(container, message) {
     container.innerHTML = `
         <div class="empty-state">
@@ -36,78 +47,89 @@ function getSelectedLabels() {
 }
 function filterNotesByCategory(category) {
     currentFilter = category;
-    
+
     if (category === "all") {
         renderNotes(searchInput.value);
     } else {
-        const filtered = notes.filter(note => 
-            note.labels && note.labels.includes(category)
+        const filtered = notes.filter(note =>
+            (note.labels && note.labels.includes(category)) ||
+            (note.folder === category)
         );
-        
+
         // Create a temporary filtered display
         notesGrid.innerHTML = "";
-        
+
         if (filtered.length === 0) {
-           showEmptyState(
-    notesGrid,
-    `No ${category} notes found. Start by adding your first note!`
-);
+            showEmptyState(
+                notesGrid,
+                `No ${category} notes found. Start by adding your first note!`
+            );
             return;
         }
-        
+
         filtered.forEach((note, index) => {
             const originalIndex = notes.findIndex(n => n.id === note.id);
-            
+
             const card = document.createElement("div");
             card.className = "note-card";
-            
+
             if (note.labels && note.labels.length > 0) {
                 card.setAttribute('data-labels', note.labels.join(' '));
-                
+
                 const labelsDiv = document.createElement("div");
                 labelsDiv.className = "note-labels";
-                
+
                 note.labels.forEach(label => {
                     const labelSpan = document.createElement("span");
                     labelSpan.className = `note-label ${label.toLowerCase()}`;
                     labelSpan.textContent = label;
                     labelsDiv.appendChild(labelSpan);
                 });
-                
+
                 card.appendChild(labelsDiv);
             }
-            
+
             const content = document.createElement("p");
             content.textContent = note.text;
-            
+
             const actions = document.createElement("div");
             actions.className = "card-actions";
-            
+
             const editBtn = document.createElement("button");
             editBtn.textContent = "Edit";
             editBtn.className = "edit-btn";
             editBtn.onclick = () => editNote(originalIndex);
-            
+
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
             deleteBtn.onclick = () => deleteNote(originalIndex);
-            
+
             actions.appendChild(editBtn);
             actions.appendChild(deleteBtn);
-            
+
             card.appendChild(content);
             card.appendChild(actions);
-            
+
             notesGrid.appendChild(card);
         });
     }
-    
+
     // Update active state in sidebar
     document.querySelectorAll('.sidebar li').forEach(li => {
         li.classList.remove('active');
     });
-    document.getElementById(`nav${category}`).classList.add('active');
+
+    // Check if it's a built-in category or a custom folder
+    const builtInNav = document.getElementById(`nav${category}`);
+    if (builtInNav) {
+        builtInNav.classList.add('active');
+    } else {
+        const customNavs = document.querySelectorAll('.custom-folder-item');
+        customNavs.forEach(nav => {
+            if (nav.dataset.folder === category) nav.classList.add('active');
+        });
+    }
 }
 function saveNotes() {
     localStorage.setItem("notestackNotes", JSON.stringify(notes));
@@ -118,12 +140,19 @@ notes = notes.map(note => {
         return {
             id: Date.now() + Math.random(),
             text: note,
-            labels: []
+            labels: [],
+            folder: ""
         };
     }
+    // Set empty folder if undefined for backward compatibility
+    if (note.folder === undefined) note.folder = "";
     return note;
 });
 saveNotes();
+
+function saveFolders() {
+    localStorage.setItem("noteFolders", JSON.stringify(folders));
+}
 
 function saveTrash() {
     localStorage.setItem("ultimateTrash", JSON.stringify(trash));
@@ -135,13 +164,13 @@ function renderNotes(filter = "") {
         filterNotesByCategory(currentFilter);
         return;
     }
-    
+
     notesGrid.innerHTML = "";
-    
+
     let filteredNotes = notes;
     if (filter.startsWith('#')) {
         const labelFilter = filter.substring(1).toLowerCase();
-        filteredNotes = notes.filter(note => 
+        filteredNotes = notes.filter(note =>
             note.labels && note.labels.some(label => label.toLowerCase().includes(labelFilter))
         );
     } else {
@@ -149,77 +178,80 @@ function renderNotes(filter = "") {
             note.text.toLowerCase().includes(filter.toLowerCase())
         );
     }
-    
+
     if (filteredNotes.length === 0 && filter.trim() !== "") {
-       showEmptyState(
-    notesGrid,
-    `No notes found matching "${filter}". Try a different search or add a new note.`
-);
+        showEmptyState(
+            notesGrid,
+            `No notes found matching "${filter}". Try a different search or add a new note.`
+        );
         return;
     }
-    
+
     filteredNotes.forEach((note, index) => {
         const originalIndex = notes.findIndex(n => n.text === note.text && n.id === note.id);
-        
+
         const card = document.createElement("div");
         card.className = "note-card";
-        
+
         if (note.labels && note.labels.length > 0) {
             card.setAttribute('data-labels', note.labels.join(' '));
-            
+
             const labelsDiv = document.createElement("div");
             labelsDiv.className = "note-labels";
-            
+
             note.labels.forEach(label => {
                 const labelSpan = document.createElement("span");
                 labelSpan.className = `note-label ${label.toLowerCase()}`;
                 labelSpan.textContent = label;
                 labelsDiv.appendChild(labelSpan);
             });
-            
+
             card.appendChild(labelsDiv);
         }
-        
+
         const content = document.createElement("p");
         content.textContent = note.text;
-        
+
         const actions = document.createElement("div");
         actions.className = "card-actions";
-        
+
         const editBtn = document.createElement("button");
         editBtn.textContent = "Edit";
         editBtn.className = "edit-btn";
         editBtn.onclick = () => editNote(originalIndex);
-        
+
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.className = "delete-btn";
         deleteBtn.onclick = () => deleteNote(originalIndex);
-        
+
         actions.appendChild(editBtn);
         actions.appendChild(deleteBtn);
-        
+
         card.appendChild(content);
         card.appendChild(actions);
-        
+
         notesGrid.appendChild(card);
     });
 }
 function addNote() {
     const text = noteInput.value.trim();
     if (!text) return;
-    
+
     const selectedLabels = getSelectedLabels();
-    
+    const selectedFolder = folderSelect.value;
+
     notes.push({
         id: Date.now(),
         text: text,
-        labels: selectedLabels
+        labels: selectedLabels,
+        folder: selectedFolder
     });
-    
+
     noteInput.value = "";
+    folderSelect.value = "";
     labelCheckboxes.forEach(cb => cb.checked = false);
-    
+
     saveNotes();
     renderNotes(searchInput.value);
 }
@@ -230,7 +262,7 @@ function deleteNote(index) {
     notes.splice(index, 1);
     saveNotes();
     saveTrash();
-    
+
     // Re-render based on current view
     if (currentFilter !== "all") {
         filterNotesByCategory(currentFilter);
@@ -252,64 +284,64 @@ addNoteBtn.addEventListener("click", addNote);
 searchInput.addEventListener("input", () => {
     if (currentFilter !== "all") {
         // If in category view, search within that category
-        const filtered = notes.filter(note => 
+        const filtered = notes.filter(note =>
             note.labels && note.labels.includes(currentFilter) &&
             note.text.toLowerCase().includes(searchInput.value.toLowerCase())
         );
-        
+
         notesGrid.innerHTML = "";
-        
+
         if (filtered.length === 0) {
             notesGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">
                 No ${currentFilter} notes found matching "${searchInput.value}"
             </p>`;
             return;
         }
-        
+
         filtered.forEach((note, index) => {
             const originalIndex = notes.findIndex(n => n.id === note.id);
-            
+
             const card = document.createElement("div");
             card.className = "note-card";
-            
+
             if (note.labels && note.labels.length > 0) {
                 card.setAttribute('data-labels', note.labels.join(' '));
-                
+
                 const labelsDiv = document.createElement("div");
                 labelsDiv.className = "note-labels";
-                
+
                 note.labels.forEach(label => {
                     const labelSpan = document.createElement("span");
                     labelSpan.className = `note-label ${label.toLowerCase()}`;
                     labelSpan.textContent = label;
                     labelsDiv.appendChild(labelSpan);
                 });
-                
+
                 card.appendChild(labelsDiv);
             }
-            
+
             const content = document.createElement("p");
             content.textContent = note.text;
-            
+
             const actions = document.createElement("div");
             actions.className = "card-actions";
-            
+
             const editBtn = document.createElement("button");
             editBtn.textContent = "Edit";
             editBtn.className = "edit-btn";
             editBtn.onclick = () => editNote(originalIndex);
-            
+
             const deleteBtn = document.createElement("button");
             deleteBtn.textContent = "Delete";
             deleteBtn.className = "delete-btn";
             deleteBtn.onclick = () => deleteNote(originalIndex);
-            
+
             actions.appendChild(editBtn);
             actions.appendChild(deleteBtn);
-            
+
             card.appendChild(content);
             card.appendChild(actions);
-            
+
             notesGrid.appendChild(card);
         });
     } else {
@@ -321,7 +353,7 @@ function restoreNote(index) {
     trash.splice(index, 1);
     saveNotes();
     saveTrash();
-    
+
     // If we're in trash view, stay in trash view
     if (document.getElementById("trashView").style.display === "block") {
         renderTrash();
@@ -335,7 +367,7 @@ function restoreNote(index) {
     }
 }
 function permanentlyDelete(index) {
-     if (!confirm("Permanently delete this note? This cannot be undone.")) return;
+    if (!confirm("Permanently delete this note? This cannot be undone.")) return;
     trash.splice(index, 1);
     saveTrash();
     renderTrash();
@@ -344,51 +376,51 @@ function permanentlyDelete(index) {
 function renderTrash() {
     if (!trashGrid) return;
     trashGrid.innerHTML = "";
-    
+
     if (trash.length === 0) {
         trashGrid.innerHTML = `<p style="text-align:center; margin-top:20px; color:#777;">Trash is empty</p>`;
         return;
     }
-    
+
     trash.forEach((note, index) => {
         const card = document.createElement("div");
         card.className = "note-card";
-        
+
         // Handle both old string format and new object format
         const noteText = typeof note === 'string' ? note : note.text;
         const noteLabels = typeof note === 'object' && note.labels ? note.labels : [];
-        
+
         // Show labels if they exist
         if (noteLabels.length > 0) {
             const labelsDiv = document.createElement("div");
             labelsDiv.className = "note-labels";
-            
+
             noteLabels.forEach(label => {
                 const labelSpan = document.createElement("span");
                 labelSpan.className = `note-label ${label.toLowerCase()}`;
                 labelSpan.textContent = label;
                 labelsDiv.appendChild(labelSpan);
             });
-            
+
             card.appendChild(labelsDiv);
         }
-        
+
         const content = document.createElement("p");
         content.textContent = noteText;
-        
+
         const actions = document.createElement("div");
         actions.className = "card-actions";
-        
+
         const restoreBtn = document.createElement("button");
         restoreBtn.textContent = "Restore";
         restoreBtn.className = "edit-btn";
         restoreBtn.onclick = () => restoreNote(index);
-        
+
         const permDeleteBtn = document.createElement("button");
         permDeleteBtn.textContent = "Delete Forever";
         permDeleteBtn.className = "delete-btn";
         permDeleteBtn.onclick = () => permanentlyDelete(index);
-        
+
         actions.appendChild(restoreBtn);
         actions.appendChild(permDeleteBtn);
         card.appendChild(content);
@@ -397,11 +429,11 @@ function renderTrash() {
     });
 }
 
-    
+
 if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark-mode");
     darkModeBtn.textContent = "☀️ Light Mode";
-   }
+}
 
 darkModeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
@@ -471,3 +503,58 @@ document.getElementById("navTrash").addEventListener("click", () => {
     document.getElementById("navIdeas").classList.remove("active");
     renderTrash();
 });
+
+// --- Folder Management ---
+function renderFolders() {
+    customFoldersList.innerHTML = "";
+    folderSelect.innerHTML = '<option value="">No Folder</option>';
+
+    folders.forEach(folder => {
+        // Sidebar list item
+        const li = document.createElement("li");
+        li.className = "custom-folder-item";
+        li.dataset.folder = folder;
+        li.innerHTML = `📁 ${folder}`;
+        li.addEventListener("click", () => {
+            document.getElementById("notesView").style.display = "block";
+            document.getElementById("trashView").style.display = "none";
+            filterNotesByCategory(folder);
+        });
+        customFoldersList.appendChild(li);
+
+        // Select dropdown option
+        const option = document.createElement("option");
+        option.value = folder;
+        option.textContent = folder;
+        folderSelect.appendChild(option);
+    });
+}
+
+newFolderBtn.addEventListener("click", () => {
+    newFolderModal.style.display = "flex";
+    folderNameInput.focus();
+});
+
+closeFolderModal.addEventListener("click", () => {
+    newFolderModal.style.display = "none";
+});
+
+createFolderBtn.addEventListener("click", () => {
+    const name = folderNameInput.value.trim();
+    if (!name) return;
+
+    if (folders.includes(name)) {
+        alert("A folder with this name already exists.");
+        return;
+    }
+
+    folders.push(name);
+    saveFolders();
+    renderFolders();
+
+    folderNameInput.value = "";
+    newFolderModal.style.display = "none";
+});
+
+// Initial Render
+renderFolders();
