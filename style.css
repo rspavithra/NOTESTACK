@@ -30,6 +30,114 @@ body {
     flex-grow: 1;
 }
 
+
+
+/* ================= CHECKLIST & MODE STYLES ================= */
+
+/* Mode Selector Buttons */
+.mode-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.mode-btn {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background: transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+    color: #555;
+}
+
+.mode-btn.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.dark-mode .mode-btn {
+    border-color: #444;
+    color: #9aa0a6;
+}
+
+.dark-mode .mode-btn.active {
+    background: #1a73e8;
+    color: white;
+}
+
+/* Checklist Input Container */
+#checklistInputContainer {
+    margin-bottom: 15px;
+}
+
+.checklist-item-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.checklist-item-row input[type="text"] {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+    outline: none;
+    font-size: 15px;
+}
+
+.dark-mode .checklist-item-row input[type="text"] {
+    background: transparent;
+    border-bottom-color: #333;
+    color: #e8eaed;
+}
+
+.remove-item-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px dashed #1a73e8;
+    color: #1a73e8;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* Checklist Rendering inside Note Cards */
+.note-checklist {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.note-checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.note-checklist-item.completed span {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.note-checklist-item input[type="checkbox"] {
+    cursor: pointer;
+}
+
+
 .dark-mode .custom-folders-section {
     border-top-color: #333;
 }
@@ -564,4 +672,8 @@ body {
     color: white;
     cursor: pointer;
     width: 100%;
+}
+/* Add this to your sidebar styles */
+.dark-mode .sidebar li[id="navChecklists"].active {
+    border-left-color: #1a73e8; /* Matches the blue primary color */
 }

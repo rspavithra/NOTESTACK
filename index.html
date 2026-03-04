@@ -12,7 +12,6 @@
 
     <div class="app">
 
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div>
                 <h2>📝 NoteStack</h2>
@@ -22,30 +21,40 @@
                     <li id="navWork">🟡 Work</li>
                     <li id="navPersonal">🔵 Personal</li>
                     <li id="navIdeas">🟢 Ideas</li>
+                    <li id="navChecklists">☑️ Checklists</li>
                     <li id="navTrash">🗑️ Trash</li>
                 </ul>
                 <div class="custom-folders-section">
                     <ul id="customFoldersList">
-                        <!-- Dynamic folders will be injected here -->
-                    </ul>
+                        </ul>
                     <button id="newFolderBtn" class="sidebar-btn">➕ New Folder</button>
                 </div>
             </div>
             <button id="darkModeBtn">🌙 Dark Mode</button>
         </aside>
 
-        <!-- Main Section -->
         <main class="main">
 
             <header class="topbar">
                 <input type="text" id="searchInput" placeholder="Search notes...">
             </header>
 
-            <!-- NOTES VIEW -->
             <div id="notesView">
                 <section class="create-note">
-                    <textarea id="noteInput" placeholder="Take a note..."></textarea>
-                    <!-- Color Labels Section -->
+                    <div id="editorContainer">
+                        <textarea id="noteInput" placeholder="Take a note..."></textarea>
+                        <div id="checklistInputContainer" style="display: none;">
+                            <div id="checklistItems">
+                                </div>
+                            <button id="addChecklistItemBtn" class="secondary-btn">+ Add Item</button>
+                        </div>
+                    </div>
+
+                    <div class="mode-selector">
+                        <button id="textModeBtn" class="mode-btn active">📄 Text</button>
+                        <button id="checklistModeBtn" class="mode-btn">☑️ Checklist</button>
+                    </div>
+
                     <div class="label-selector">
                         <span class="label-title">Labels:</span>
                         <div class="label-options">
@@ -67,19 +76,17 @@
                             </label>
                         </div>
                     </div>
-                    <!-- Folder Selection -->
+
                     <div class="folder-selector">
                         <select id="folderSelect">
                             <option value="">No Folder</option>
-                            <!-- Dynamic folders injected here -->
-                        </select>
+                            </select>
                     </div>
                     <button id="addNoteBtn">Add Note</button>
                 </section>
                 <section id="notesGrid" class="notes-grid"></section>
             </div>
 
-            <!-- TRASH VIEW (hidden by default) -->
             <div id="trashView" style="display:none;">
                 <section id="trashGrid" class="notes-grid"></section>
             </div>
@@ -88,7 +95,6 @@
 
     </div>
 
-    <!-- New Folder Modal -->
     <div id="newFolderModal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close-button" id="closeFolderModal">&times;</span>
