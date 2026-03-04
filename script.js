@@ -555,6 +555,48 @@ createFolderBtn.addEventListener("click", () => {
     folderNameInput.value = "";
     newFolderModal.style.display = "none";
 });
+/* ===========================
+   KEYBOARD SHORTCUTS (SAFE)
+=========================== */
 
+document.addEventListener("keydown", (e) => {
+
+    // ALT + N → Focus new note
+    if (e.altKey && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        noteInput.focus();
+        return;
+    }
+
+    // ALT + S → Focus search
+    if (e.altKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        searchInput.focus();
+        return;
+    }
+
+    // ALT + D → Toggle dark mode
+    if (e.altKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        darkModeBtn.click();
+        return;
+    }
+
+    // ALT + T → Open Trash
+    if (e.altKey && e.key.toLowerCase() === "t") {
+        e.preventDefault();
+        document.getElementById("navTrash").click();
+        return;
+    }
+
+    // ESC → Clear search
+    if (e.key === "Escape") {
+        searchInput.value = "";
+        renderNotes();
+        return;
+    }
+
+});
 // Initial Render
+
 renderFolders();
