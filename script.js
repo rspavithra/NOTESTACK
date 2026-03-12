@@ -121,7 +121,8 @@ function filterNotesByCategory(category) {
     });
 
     // Check if it's a built-in category or a custom folder
-    const builtInNav = document.getElementById(`nav${category}`);
+    const navId = category === "all" ? "navNotes" : `nav${category}`;
+    const builtInNav = document.getElementById(navId);
     if (builtInNav) {
         builtInNav.classList.add('active');
     } else {
