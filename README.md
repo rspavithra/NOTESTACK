@@ -33,3 +33,43 @@ No installation or backend required.
 - `style.css` – App styling
 - `script.js` – App logic
 
+## Basic Usage Instructions
+➕ Add a Note
+
+Type your note in the text area
+
+Select labels if needed
+
+Click Add Note
+
+✏️ Edit a Note
+
+Click the Edit button on a note
+
+Modify the text and save
+
+🗑️ Delete a Note
+
+Click the Delete button
+
+The note is moved to Trash
+
+🔍 Search Notes
+
+Use the search bar at the top to filter notes by text
+
+🧲 Reorder Notes
+
+Drag and drop notes to rearrange them
+
+The new order is saved automatically
+
+🌙 Dark Mode
+
+Click Dark Mode in the sidebar to toggle theme
+
+💾 Data Storage
+
+Notes and their order are stored using browser localStorage
+
+Draft notes are auto-saved while typing
