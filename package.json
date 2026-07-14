@@ -1,0 +1,30 @@
+{
+  "name": "notestack",
+  "version": "1.0.0",
+  "description": "![image](https://github.com/user-attachments/assets/60c8f362-3d60-4898-8c3a-c3519656325b)",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "start": "http-server . -p 4173 -c-1",
+    "cypress:open": "cypress open",
+    "test:e2e": "cypress run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^15.18.1",
+    "http-server": "^14.1.1",
+    "vite": "^8.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soaresavelino/NOTESTACK.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/soaresavelino/NOTESTACK/issues"
+  },
+  "homepage": "https://github.com/soaresavelino/NOTESTACK#readme"
+}

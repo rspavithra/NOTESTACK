@@ -1,0 +1,32 @@
+name: Testes Cypress
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  cypress-run:
+    name: Executar testes E2E
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Executar Cypress
+        uses: cypress-io/github-action@fa4a118725a8f001170d49631ea89e5d66fee626 # v7.4.1
+        with:
+          start: npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
+          wait-on: http://127.0.0.1:5173
+          wait-on-timeout: 120
+          browser: electron
