@@ -1,22 +1,84 @@
-const noteInput = document.getElementById("noteInput");
-const addNoteBtn = document.getElementById("addNoteBtn");
-const notesGrid = document.getElementById("notesGrid");
-const searchInput = document.getElementById("searchInput");
-const trashGrid = document.getElementById("trashGrid");
-const darkModeBtn = document.getElementById("darkModeBtn");
-const labelCheckboxes = document.querySelectorAll(".label-checkbox");
 
-// Folder Elements
-const newFolderBtn = document.getElementById("newFolderBtn");
-const newFolderModal = document.getElementById("newFolderModal");
-const closeFolderModal = document.getElementById("closeFolderModal");
-const folderNameInput = document.getElementById("folderNameInput");
-const createFolderBtn = document.getElementById("createFolderBtn");
-const customFoldersList = document.getElementById("customFoldersList");
-const folderSelect = document.getElementById("folderSelect");
+// ==========================================
+// PADRÃO DE PROJETO: SINGLETON (NoteStorage)
+// ==========================================
+class NoteStorage {
+    constructor() {
+        if (!NoteStorage.instancia) {
+            NoteStorage.instancia = this;
+        }
+        return NoteStorage.instancia;
+    }
 
-let trash = JSON.parse(localStorage.getItem("ultimateTrash")) || [];
-let notes = JSON.parse(localStorage.getItem("ultimateNotes")) || [];
+    // Busca as notas usando a sua chave definitiva do projeto
+    buscarNotas() {
+        return JSON.parse(localStorage.getItem('ultimateNotes')) || [];
+    }
+
+    // Salva as notas usando a sua chave definitiva do projeto
+    salvarNotas(notes) {
+        localStorage.setItem('ultimateNotes', JSON.stringify(notes));
+    }
+
+    // Busca a lixeira usando a sua chave definitiva do projeto
+    buscarLixeira() {
+        return JSON.parse(localStorage.getItem('ultimateTrash')) || [];
+    }
+
+    // Salva a lixeira usando a sua chave definitiva do projeto
+    salvarLixeira(trash) {
+        localStorage.setItem('ultimateTrash', JSON.stringify(trash));
+    }
+}
+
+// Cria a instância única do Singleton
+const storage = new NoteStorage();
+Object.freeze(storage);
+
+// ==========================================
+// PADRÃO DE PROJETO: FACADE (UIManager)
+// ==========================================
+class UIManager {
+    // Fachada para buscar um elemento do HTML sem precisar digitar o comando longo
+    static obterElemento(id) {
+        return document.getElementById(id);
+    }
+
+    // Fachada para abrir ou fechar modais/telas trocando classes CSS
+    static alternarClasse(id, classe, adicionar = true) {
+        const elemento = this.obterElemento(id);
+        if (elemento) {
+            if (adicionar) elemento.classList.add(classe);
+            else elemento.classList.remove(classe);
+        }
+    }
+}
+
+
+
+// =================================================================
+// APLICAÇÃO DO PADRÃO FACADE (Substituindo a busca direta do DOM)
+// =================================================================
+const noteInput = UIManager.obterElemento("noteInput");
+const addNoteBtn = UIManager.obterElemento("addNoteBtn");
+const notesGrid = UIManager.obterElemento("notesGrid");
+const searchInput = UIManager.obterElemento("searchInput");
+const trashGrid = UIManager.obterElemento("trashGrid");
+const darkModeBtn = UIManager.obterElemento("darkModeBtn");
+const labelCheckboxes = document.querySelectorAll(".label-checkbox"); // QuerySelector se mantém separado
+
+// Folder Elements usando a nossa Fachada (Facade)
+const newFolderBtn = UIManager.obterElemento("newFolderBtn");
+const newFolderModal = UIManager.obterElemento("newFolderModal");
+const closeFolderModal = UIManager.obterElemento("closeFolderModal");
+const folderNameInput = UIManager.obterElemento("folderNameInput");
+const createFolderBtn = UIManager.obterElemento("createFolderBtn");
+const customFoldersList = UIManager.obterElemento("customFoldersList");
+const folderSelect = UIManager.obterElemento("folderSelect");
+
+// AGORA CHAMA O SINGLETON NO INÍCIO:
+let trash = storage.buscarLixeira();
+let notes = storage.buscarNotas();
 let folders = JSON.parse(localStorage.getItem("noteFolders")) || [];
 let currentFilter = "all"; // Track current category/folder filter
 function showEmptyState(container, message) {
@@ -51,12 +113,16 @@ function filterNotesByCategory(category) {
     if (category === "all") {
         renderNotes(searchInput.value);
     } else {
+        // SOLUÇÃO CODE SMELL 2: Substituição da checagem manual antiga com o operador '&&'
+        // pelo operador moderno de ponto de interrogação e ponto (Optional Chaining - ?.).
+        // Isso evita que o código quebre caso 'labels' venha vazio ou nulo, deixando a linha limpa e curta.
         const filtered = notes.filter(note =>
-            (note.labels && note.labels.includes(category)) ||
-            (note.folder === category)
+            note.labels?.includes(category) || (note.folder === category)
         );
 
+
         // Create a temporary filtered display
+    
         notesGrid.innerHTML = "";
 
         if (filtered.length === 0) {
@@ -132,8 +198,11 @@ function filterNotesByCategory(category) {
     }
 }
 function saveNotes() {
-    localStorage.setItem("notestackNotes", JSON.stringify(notes));
+    // PADRÃO SINGLETON: Em vez de acessar o localStorage solto no código,
+    // delegamos a responsabilidade para a nossa instância única do NoteStorage.
+    storage.salvarNotas(notes);
 }
+
 // Migrate old notes to new format
 notes = notes.map(note => {
     if (typeof note === 'string') {
@@ -155,7 +224,8 @@ function saveFolders() {
 }
 
 function saveTrash() {
-    localStorage.setItem("ultimateTrash", JSON.stringify(trash));
+    // PADRÃO SINGLETON: Delegando o salvamento da lixeira para a instância centralizada.
+    storage.salvarLixeira(trash);
 }
 
 function renderNotes(filter = "") {
@@ -165,6 +235,7 @@ function renderNotes(filter = "") {
         return;
     }
 
+    //code smell 2
     notesGrid.innerHTML = "";
 
     let filteredNotes = notes;
@@ -354,16 +425,14 @@ function restoreNote(index) {
     saveNotes();
     saveTrash();
 
-    // If we're in trash view, stay in trash view
+    // SOLUÇÃO CODE SMELL 1: Juntamos o 'else' com o 'if' de baixo.
+    // Isso eliminou chaves desnecessárias, deixando o código em linha reta e mais legível.
     if (document.getElementById("trashView").style.display === "block") {
         renderTrash();
+    } else if (currentFilter !== "all") {
+        filterNotesByCategory(currentFilter);
     } else {
-        // Otherwise update notes view based on current filter
-        if (currentFilter !== "all") {
-            filterNotesByCategory(currentFilter);
-        } else {
-            renderNotes(searchInput.value);
-        }
+        renderNotes(searchInput.value);
     }
 }
 function permanentlyDelete(index) {
@@ -588,12 +657,15 @@ document.addEventListener("keydown", (e) => {
         document.getElementById("navTrash").click();
         return;
     }
-
+// code smell 3
     // ESC → Clear search
     if (e.key === "Escape") {
         searchInput.value = "";
         renderNotes();
-        return;
+        
+        // SOLUÇÃO CODE SMELL 3: Removido o 'return;' redundante (Redundant Jump).
+        // Como esta condição é o fim do bloco do 'if' e não há código executado depois
+        // dentro desta lógica, a função já encerra naturalmente sem precisar de "código morto".
     }
 
 });
