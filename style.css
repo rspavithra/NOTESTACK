@@ -565,3 +565,279 @@ body {
     cursor: pointer;
     width: 100%;
 }
+/* ================= SUBJECT FILTER + RESULTS ================= */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-bar .search-field {
+    flex: 1 1 240px;
+}
+
+.filter-bar .search-field input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.subject-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.subject-filter label {
+    font-size: 13px;
+    color: #5f6368;
+}
+
+.subject-filter select {
+    max-width: 180px;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: #202124;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filter-bar .search-field input:focus-visible,
+.subject-filter select:focus-visible,
+.subject-input-row input:focus-visible,
+#clearFiltersBtn:focus-visible,
+.modal-content textarea:focus-visible {
+    outline: 2px solid #1a73e8;
+    outline-offset: 2px;
+}
+
+#clearFiltersBtn {
+    padding: 9px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    background: white;
+    color: #1a73e8;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#clearFiltersBtn:hover {
+    background: #e8f0fe;
+}
+
+.results-info {
+    min-height: 18px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #5f6368;
+}
+
+/* Subject input in the note composer */
+.subject-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.subject-input-row label {
+    font-size: 14px;
+    color: #666;
+}
+
+.subject-input-row input {
+    flex: 1;
+    max-width: 320px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f8f9fa;
+    color: #444;
+    font-size: 14px;
+}
+
+/* Subject badge on note cards */
+.note-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.note-meta .note-labels {
+    margin-bottom: 0;
+}
+
+.note-subject {
+    max-width: 100%;
+    padding: 4px 9px;
+    border-radius: 12px;
+    background: #e8f0fe;
+    color: #1a56b0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    overflow-wrap: anywhere;
+}
+
+/* Edit dialog */
+.modal-content label {
+    display: block;
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.modal-content textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-actions button {
+    flex: 1;
+    width: auto;
+}
+
+.modal-actions .secondary-btn {
+    background: #e8eaed;
+    color: #3c4043;
+}
+
+.form-error {
+    margin: -8px 0 12px;
+    color: #d93025;
+    font-size: 13px;
+}
+
+/* Dark mode for the new controls */
+.dark-mode .subject-filter {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.dark-mode .subject-filter label,
+.dark-mode .subject-input-row label {
+    color: #9aa0a6;
+}
+
+.dark-mode .subject-filter select,
+.dark-mode .subject-filter select option {
+    background: #2a2a2a;
+    color: #e8eaed;
+}
+
+.dark-mode #clearFiltersBtn {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #8ab4f8;
+}
+
+.dark-mode #clearFiltersBtn:hover {
+    background: #333;
+}
+
+.dark-mode .results-info {
+    color: #9aa0a6;
+}
+
+.dark-mode .subject-input-row {
+    border-top-color: #333;
+}
+
+.dark-mode .subject-input-row input {
+    background: #333;
+    border-color: #555;
+    color: #e8eaed;
+}
+
+.dark-mode .note-subject {
+    background: #2d3748;
+    color: #8ab4f8;
+}
+
+.dark-mode .modal-content label {
+    color: #c4c7cc;
+}
+
+.dark-mode .modal-content textarea {
+    background: #333;
+    border-color: #555;
+    color: #e8eaed;
+}
+
+.dark-mode .modal-actions .secondary-btn {
+    background: #3c4043;
+    color: #e8eaed;
+}
+
+/* Keep filter controls usable on narrow screens */
+@media (max-width: 720px) {
+    .app {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .main {
+        padding: 16px;
+    }
+
+    .filter-bar .search-field {
+        flex-basis: 100%;
+    }
+
+    .subject-filter {
+        flex: 1 1 220px;
+    }
+
+    .subject-input-row {
+        flex-wrap: wrap;
+    }
+
+    .subject-input-row input {
+        max-width: 100%;
+    }
+}
