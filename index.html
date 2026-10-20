@@ -38,13 +38,34 @@
         <main class="main">
 
             <header class="topbar">
-                <input type="text" id="searchInput" placeholder="Search notes...">
+                <div class="filter-bar">
+                    <div class="search-field">
+                        <label for="searchInput" class="sr-only">Search notes</label>
+                        <input type="search" id="searchInput" placeholder="Search notes..." autocomplete="off">
+                    </div>
+                    <div class="subject-filter">
+                        <label for="subjectFilter">Subject</label>
+                        <select id="subjectFilter">
+                            <option value="all">All subjects</option>
+                        </select>
+                    </div>
+                    <button id="clearFiltersBtn" type="button" hidden>Clear filters</button>
+                </div>
+                <p id="resultsInfo" class="results-info" aria-live="polite"></p>
             </header>
 
             <!-- NOTES VIEW -->
             <div id="notesView">
                 <section class="create-note">
                     <textarea id="noteInput" placeholder="Take a note..."></textarea>
+                    <!-- Subject Section -->
+                    <div class="subject-input-row">
+                        <label for="subjectInput">Subject</label>
+                        <input type="text" id="subjectInput" list="subjectOptions" placeholder="e.g., DBMS" autocomplete="off" maxlength="60">
+                        <datalist id="subjectOptions">
+                            <!-- Subjects are derived from saved notes -->
+                        </datalist>
+                    </div>
                     <!-- Color Labels Section -->
                     <div class="label-selector">
                         <span class="label-title">Labels:</span>
@@ -69,7 +90,7 @@
                     </div>
                     <!-- Folder Selection -->
                     <div class="folder-selector">
-                        <select id="folderSelect">
+                        <select id="folderSelect" aria-label="Folder">
                             <option value="">No Folder</option>
                             <!-- Dynamic folders injected here -->
                         </select>
@@ -95,6 +116,23 @@
             <h2>Create Folder</h2>
             <input type="text" id="folderNameInput" placeholder="Folder Name (e.g., College, Work)">
             <button id="createFolderBtn">Create</button>
+        </div>
+    </div>
+
+    <!-- Edit Note Modal -->
+    <div id="editNoteModal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="editNoteTitle">
+        <div class="modal-content">
+            <span class="close-button" id="closeEditModal">&times;</span>
+            <h2 id="editNoteTitle">Edit Note</h2>
+            <label for="editNoteInput">Note</label>
+            <textarea id="editNoteInput" rows="5"></textarea>
+            <label for="editSubjectInput">Subject</label>
+            <input type="text" id="editSubjectInput" list="subjectOptions" placeholder="e.g., DBMS" autocomplete="off" maxlength="60">
+            <p id="editNoteError" class="form-error" role="alert" hidden>Note text cannot be empty.</p>
+            <div class="modal-actions">
+                <button id="saveEditBtn" type="button">Save</button>
+                <button id="cancelEditBtn" class="secondary-btn" type="button">Cancel</button>
+            </div>
         </div>
     </div>
 
